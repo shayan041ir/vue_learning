@@ -29,6 +29,7 @@ const message = ref('')
 const filteredUsers = computed(() => {
   const keyword = search.value.trim().toLowerCase()
 
+
   return users.value.filter(user =>
     user.name.toLowerCase().includes(keyword) ||
     user.email.toLowerCase().includes(keyword)
@@ -37,11 +38,20 @@ const filteredUsers = computed(() => {
 
 function addUser() {
   const name = form.value.name.trim()
-  const email = form.value.email.trim()
+  const email = form.value.email.trim().toLowerCase()
   const age = Number(form.value.age)
 
   if (!name || !email || !form.value.age) {
     message.value = 'لطفاً تمام فیلدها را تکمیل کن.'
+    return
+  }
+
+  const result = users.value.find(
+    user => user.email.trim().toLowerCase() === email
+  )
+
+  if (result) {
+    message.value = 'این ایمیل قبلاً ثبت شده است.'
     return
   }
 
