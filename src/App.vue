@@ -6,27 +6,27 @@ const apiusers = ref([])
 const loading = ref(true)
 const errorMsg = ref('')
 
-function getUsers() {
+async function getUsers() {
   loading.value = true
   errorMsg.value = ''
 
-  fetch('https://jsonplaceholder.typicode.com/users')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('دریافت اطلاعات از سرور ناموفق بود.')
-      }
+  try {
+    const response = await fetch(
+      'https://jsonplaceholder.typicode.com/users'
+    )
 
-      return response.json()
-    })
-    .then(data => {
-      apiusers.value = data
-    })
-    .catch(error => {
-      errorMsg.value = error.message
-    })
-    .finally(() => {
-      loading.value = false
-    })
+    if (!response.ok) {
+      throw new Error('دریافت اطلاعات ناموفق بود.')
+    }
+
+    const data = await response.json()
+
+    apiusers.value = data
+  } catch (error) {
+    errorMsg.value = error.message
+  } finally {
+    loading.value = false
+  }
 }
 
 getUsers()
@@ -40,9 +40,10 @@ getUsers()
       در حال دریافت اطلاعات...
     </p>
 
-    <p v-else-if="errorMsg">
-      {{ errorMsg }}
-    </p>
+    <div v-else-if="errorMsg">
+      <p>{{ errorMsg }}</p>
+      <button @click="getUsers">تلاش مجدد</button>
+    </div>
 
     <div v-else>
       <article
@@ -71,8 +72,8 @@ main {
 }
 
 .user-card {
-  padding: 16px;
   margin-bottom: 12px;
+  padding: 16px;
   border: 1px solid #ddd;
   border-radius: 10px;
 }
