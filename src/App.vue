@@ -1,67 +1,83 @@
+
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from 'vue'
 
-const name = ref("Shayan");
-const count = ref(0);
-const message = ref("به اولین پروژه Vue من خوش آمدی.");
-const age = ref(23);
-const user = ref({
-  name: "Shayan",
-  age: 23,
-  email: "shayan@example.com"
-});
-const hobbies = ref(["خواندن", "نوشتن", "برنامه‌نویسی"]);
+const products = ['لپ‌تاپ', 'موس', 'کیبورد']
+console.log(products[0]) // لپ‌تاپ
+console.log(products[1]) // موس
+console.log(products[2]) // کیبورد
+console.log(products.length) // 3 
 
-function increaseCount() {
-  count.value++;
-}
 
-function decreaseCount() {
-  if (count.value > 0) {
-    count.value--;
-  }
+const search = ref('')
+
+const filteredUsers = computed(() => {
+  return users.value.filter(user =>
+    user.name.toLowerCase().includes(search.value.toLowerCase())
+  )
+})
+
+function addUser() {
+  const newId = Math.max(0, ...users.value.map(user => user.id)) + 1
+
+  users.value.push({
+    id: newId,
+    name: `User ${newId}`,
+    age: 20
+  })
 }
 </script>
 
 <template>
   <main>
-    <h1>سلام {{ name }}!</h1>
+    <h1>پنل مدیریت کاربران</h1>
 
-    <p>{{ message }}</p>
+    <input
+      v-model="search"
+      placeholder="جست‌وجوی نام کاربر..."
+    />
 
-    <p>تعداد کلیک‌ها: {{ count }}</p>
+    <button @click="addUser">
+      افزودن کاربر آزمایشی
+    </button>
 
-    <p>سن: {{ age }}</p>
+    <p>تعداد نتایج: {{ filteredUsers.length }}</p>
 
-    <p>اطلاعات کاربر:</p>
     <ul>
-      <li>نام: {{ user.name }}</li>
-      <li>سن: {{ user.age }}</li>
-      <li>ایمیل: {{ user.email }}</li>
+      <li
+        v-for="user in filteredUsers"
+        :key="user.id"
+      >
+        {{ user.name }} — {{ user.age }} سال
+      </li>
     </ul>
 
-    <p>سرگرمی‌ها:</p>
-    <ul>
-      <li v-for="(hobby, index) in hobbies" :key="index">{{ hobby }}</li>
-    </ul>
-
-    <button @click="increaseCount">افزایش شمارنده</button>
-    <button @click="count = 0">بازنشانی شمارنده</button>
-    <button @click="decreaseCount">کاهش شمارنده</button>
+    <p v-if="filteredUsers.length === 0">
+      کاربری پیدا نشد.
+    </p>
   </main>
 </template>
 
 <style scoped>
 main {
-  background-color: #000000;
   max-width: 600px;
-  margin: 80px auto;
-  text-align: center;
+  margin: 40px auto;
+  padding: 24px;
   font-family: sans-serif;
 }
 
+input {
+  padding: 10px;
+  margin-right: 8px;
+  margin-bottom: 12px;
+}
+
 button {
-  padding: 10px 18px;
+  padding: 10px;
   cursor: pointer;
+}
+
+li {
+  margin: 12px 0;
 }
 </style>
